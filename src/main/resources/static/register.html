@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | ShopEase</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --accent: #e94560;
+            --bg: #f7f3ee;
+            --white: #ffffff;
+            --text: #2d2d2d;
+            --muted: #888;
+            --border: #e0dbd4;
+            --success: #27ae60;
+            --error: #e74c3c;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -100px; right: -100px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(233,69,96,0.1) 0%, transparent 70%);
+            border-radius: 50%; z-index: 0;
+        }
+
+        .wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            width: 960px;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.15);
+            animation: slideUp 0.7s cubic-bezier(.23,1,.32,1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Left Panel */
+        .left-panel {
+            width: 340px;
+            flex-shrink: 0;
+            background: var(--primary);
+            padding: 55px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: -60px; right: -60px;
+            width: 220px; height: 220px;
+            border: 2px solid rgba(233,69,96,0.2);
+            border-radius: 50%;
+        }
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            bottom: 30px; left: -50px;
+            width: 180px; height: 180px;
+            border: 2px solid rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--white);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .brand-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+
+        .left-content { position: relative; z-index: 1; }
+
+        .left-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--white);
+            line-height: 1.25;
+            margin-bottom: 16px;
+        }
+
+        .left-content h1 span { color: var(--accent); }
+
+        .left-content p {
+            color: rgba(255,255,255,0.55);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .perks { display: flex; flex-direction: column; gap: 12px; }
+
+        .perk {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.85rem;
+        }
+
+        .perk-icon {
+            width: 26px; height: 26px;
+            background: rgba(233,69,96,0.15);
+            border-radius: 7px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; flex-shrink: 0;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            flex: 1;
+            background: var(--white);
+            padding: 50px 55px;
+            position: relative;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 22px; right: 24px;
+            width: 36px; height: 36px;
+            background: var(--bg);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none;
+            color: var(--primary);
+            font-size: 15px;
+            transition: all 0.25s;
+        }
+        .home-btn:hover { background: var(--primary); color: var(--white); }
+
+        .form-header { margin-bottom: 28px; }
+
+        .form-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.9rem;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .form-header p { color: var(--muted); font-size: 0.88rem; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group { margin-bottom: 0; }
+        .form-group.full { grid-column: 1 / -1; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 7px;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+        }
+
+        .required { color: var(--accent); }
+
+        .input-wrap { position: relative; }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1.5px solid var(--border);
+            border-radius: 11px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.92rem;
+            color: var(--text);
+            background: #faf9f7;
+            transition: all 0.25s;
+            outline: none;
+        }
+
+        .input-wrap input:focus {
+            border-color: var(--accent);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(233,69,96,0.08);
+        }
+
+        .input-wrap input.error-inp { border-color: var(--error); background: #fff5f5; }
+
+        .input-icon {
+            position: absolute;
+            left: 13px; top: 50%;
+            transform: translateY(-50%);
+            color: var(--muted);
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        .toggle-eye {
+            position: absolute;
+            right: 13px; top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 15px;
+            color: var(--muted);
+        }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 0.75rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* Gender */
+        .gender-wrap {
+            display: flex;
+            gap: 10px;
+        }
+
+        .gender-opt {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 11px;
+            border: 1.5px solid var(--border);
+            border-radius: 11px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            color: var(--muted);
+            transition: all 0.2s;
+            background: #faf9f7;
+        }
+
+        .gender-opt input { display: none; }
+
+        .gender-opt:has(input:checked) {
+            border-color: var(--accent);
+            background: rgba(233,69,96,0.05);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* OTP Section */
+        .otp-section {
+            display: none;
+            margin-top: 18px;
+            padding: 18px;
+            background: #faf9f7;
+            border-radius: 14px;
+            border: 1.5px solid var(--border);
+        }
+
+        .otp-section.show { display: block; }
+
+        .otp-section p {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .otp-section p span { color: var(--accent); font-weight: 600; }
+
+        .otp-inp-wrap {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .otp-inp-wrap input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 1.1rem;
+            letter-spacing: 6px;
+            font-weight: 600;
+            text-align: center;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .otp-inp-wrap input:focus { border-color: var(--accent); }
+
+        .resend-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            font-size: 0.82rem;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.98rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 22px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(233,69,96,0.3);
+        }
+
+        .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+        .spinner {
+            display: none;
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .login-link {
+            text-align: center;
+            font-size: 0.88rem;
+            color: var(--muted);
+            margin-top: 18px;
+        }
+
+        .login-link a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 28px; right: 28px;
+            padding: 13px 20px;
+            border-radius: 12px;
+            color: white;
+            font-size: 0.88rem;
+            font-weight: 500;
+            z-index: 9999;
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(.23,1,.32,1);
+            max-width: 300px;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: var(--success); }
+        .toast.error { background: var(--error); }
+        .toast.info { background: #3498db; }
+
+        @media (max-width: 768px) {
+            .wrapper { flex-direction: column; width: 95%; }
+            .left-panel { display: none; }
+            .right-panel { padding: 40px 24px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <!-- Left Panel -->
+    <div class="left-panel">
+        <a href="/index.html" class="brand"><div class="brand-dot"></div>ShopEase</a>
+        <div class="left-content">
+            <h1>Join <span>Us</span> Today!</h1>
+            <p>Create your account and start exploring thousands of products.</p>
+            <div class="perks">
+                <div class="perk"><div class="perk-icon">🎁</div>20% off your first order</div>
+                <div class="perk"><div class="perk-icon">🚀</div>Fast & free shipping</div>
+                <div class="perk"><div class="perk-icon">🔒</div>Secure & private account</div>
+                <div class="perk"><div class="perk-icon">⭐</div>Exclusive member deals</div>
+            </div>
+        </div>
+        <div style="color: rgba(255,255,255,0.25); font-size: 0.75rem;">© 2026 ShopEase</div>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+        <a href="/index.html" class="home-btn">🏠</a>
+
+        <div class="form-header">
+            <h2>Create Account</h2>
+            <p>Fill in your details to get started</p>
+        </div>
+
+        <!-- Step 1: Register Form -->
+        <div id="registerStep">
+            <div class="form-grid">
+                <!-- First Name -->
+                <div class="form-group">
+                    <label>First Name <span class="required">*</span></label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="firstName" placeholder="Rushikesh">
+                    </div>
+                    <div class="error-msg" id="firstNameError"></div>
+                </div>
+
+                <!-- Last Name -->
+                <div class="form-group">
+                    <label>Last Name <span class="required">*</span></label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="lastName" placeholder="Rekhate">
+                    </div>
+                    <div class="error-msg" id="lastNameError"></div>
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label>Phone <span class="required">*</span></label>
+                    <div class="input-wrap">
+                        <span class="input-icon">📱</span>
+                        <input type="tel" id="phone" placeholder="8766735828" maxlength="10">
+                    </div>
+                    <div class="error-msg" id="phoneError"></div>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label>Email <span class="required">*</span></label>
+                    <div class="input-wrap">
+                        <span class="input-icon">✉️</span>
+                        <input type="email" id="email" placeholder="you@example.com">
+                    </div>
+                    <div class="error-msg" id="emailError"></div>
+                </div>
+
+                <!-- Gender -->
+                <div class="form-group full">
+                    <label>Gender <span class="required">*</span></label>
+                    <div class="gender-wrap">
+                        <label class="gender-opt">
+                            <input type="radio" name="gender" value="Male"> 👨 Male
+                        </label>
+                        <label class="gender-opt">
+                            <input type="radio" name="gender" value="Female"> 👩 Female
+                        </label>
+                        <label class="gender-opt">
+                            <input type="radio" name="gender" value="Other"> 🧑 Other
+                        </label>
+                    </div>
+                    <div class="error-msg" id="genderError"></div>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label>Password <span class="required">*</span></label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" placeholder="Min 6 characters">
+                        <span class="toggle-eye" onclick="togglePass('password', this)">👁️</span>
+                    </div>
+                    <div class="error-msg" id="passwordError"></div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label>Confirm Password <span class="required">*</span></label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="confirmPassword" placeholder="Repeat password">
+                        <span class="toggle-eye" onclick="togglePass('confirmPassword', this)">👁️</span>
+                    </div>
+                    <div class="error-msg" id="confirmError"></div>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="registerBtn" onclick="handleRegister()">
+                <span class="btn-text">Create Account</span>
+                <div class="spinner" id="registerSpinner"></div>
+            </button>
+
+            <div class="login-link">Already have an account? <a href="/login.html">Sign In</a></div>
+        </div>
+
+        <!-- Step 2: OTP Verification -->
+        <div id="otpStep" style="display:none; text-align:center; padding: 20px 0;">
+            <div style="font-size: 3rem; margin-bottom: 16px;">📧</div>
+            <h3 style="font-family: 'Playfair Display', serif; color: var(--primary); font-size: 1.6rem; margin-bottom: 10px;">Verify Your Email</h3>
+            <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 30px; line-height: 1.6;">
+                We sent a 6-digit OTP to <strong id="emailDisplay" style="color: var(--accent);"></strong>.<br>Check your email or Eclipse console.
+            </p>
+
+            <div style="max-width: 300px; margin: 0 auto;">
+                <input type="text" id="otpInput"
+                    placeholder="Enter 6-digit OTP"
+                    maxlength="6"
+                    style="width:100%; padding: 16px; border: 2px solid var(--border); border-radius: 14px; font-size: 1.3rem; letter-spacing: 8px; text-align: center; font-weight: 700; outline: none; font-family: 'DM Sans', sans-serif; transition: 0.2s;"
+                    onfocus="this.style.borderColor='var(--accent)'"
+                    onblur="this.style.borderColor='var(--border)'">
+                <div class="error-msg" id="otpError" style="text-align:center; margin-top: 8px;"></div>
+
+                <button class="btn-primary" id="verifyBtn" onclick="handleVerifyOtp()" style="margin-top: 18px;">
+                    <span class="btn-text">Verify & Continue</span>
+                    <div class="spinner" id="verifySpinner"></div>
+                </button>
+
+                <button onclick="resendOtp()" style="background:none; border:none; color: var(--accent); font-size: 0.88rem; cursor: pointer; margin-top: 14px; font-weight: 600; display: block; width: 100%;">
+                    Didn't receive? Resend OTP
+                </button>
+
+                <button onclick="goBack()" style="background:none; border:none; color: var(--muted); font-size: 0.85rem; cursor: pointer; margin-top: 8px; display: block; width: 100%;">
+                    ← Go back
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const API_BASE = 'http://localhost:8080/api';
+    let registeredEmail = '';
+
+    function showToast(msg, type = 'success') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = `toast ${type} show`;
+        setTimeout(() => t.className = 'toast', 3500);
+    }
+
+    function togglePass(id, icon) {
+        const inp = document.getElementById(id);
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        icon.textContent = inp.type === 'password' ? '👁️' : '🙈';
+    }
+
+    function setLoading(btnId, spinnerId, on) {
+        const btn = document.getElementById(btnId);
+        const sp = document.getElementById(spinnerId);
+        btn.disabled = on;
+        btn.querySelector('.btn-text').style.display = on ? 'none' : 'block';
+        sp.style.display = on ? 'block' : 'none';
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
+        document.querySelectorAll('input').forEach(i => i.classList.remove('error-inp'));
+    }
+
+    function showError(fieldId, errId, msg) {
+        document.getElementById(errId).textContent = msg;
+        document.getElementById(errId).style.display = 'block';
+        const field = document.getElementById(fieldId);
+        if (field) field.classList.add('error-inp');
+    }
+
+    async function handleRegister() {
+        clearErrors();
+
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const gender = document.querySelector('input[name="gender"]:checked')?.value;
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirmPassword').value.trim();
+
+        let valid = true;
+
+        if (!firstName) { showError('firstName', 'firstNameError', 'First name is required'); valid = false; }
+        if (!lastName) { showError('lastName', 'lastNameError', 'Last name is required'); valid = false; }
+        if (!phone || phone.length !== 10) { showError('phone', 'phoneError', 'Enter valid 10-digit phone'); valid = false; }
+        if (!email || !email.includes('@')) { showError('email', 'emailError', 'Enter valid email'); valid = false; }
+        if (!gender) {
+            document.getElementById('genderError').textContent = 'Please select gender';
+            document.getElementById('genderError').style.display = 'block';
+            valid = false;
+        }
+        if (!password || password.length < 6) { showError('password', 'passwordError', 'Min 6 characters required'); valid = false; }
+        if (password !== confirmPassword) { showError('confirmPassword', 'confirmError', 'Passwords do not match'); valid = false; }
+
+        if (!valid) return;
+
+        setLoading('registerBtn', 'registerSpinner', true);
+
+        try {
+            const response = await fetch(`${API_BASE}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: firstName + ' ' + lastName,
+                    email: email,
+                    password: password,
+                    phone: phone,
+                    gender: gender
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                registeredEmail = email;
+                showToast('OTP sent! Check Eclipse console.', 'info');
+
+                // Show OTP step
+                document.getElementById('registerStep').style.display = 'none';
+                document.getElementById('otpStep').style.display = 'block';
+                document.getElementById('emailDisplay').textContent = email;
+            } else {
+                if (data.message.includes('Email')) {
+                    showError('email', 'emailError', data.message);
+                } else if (data.message.includes('Phone') || data.message.includes('phone')) {
+                    showError('phone', 'phoneError', data.message);
+                } else {
+                    showToast(data.message, 'error');
+                }
+            }
+        } catch (err) {
+            showToast('Server error! Please try again.', 'error');
+            console.error(err);
+        } finally {
+            setLoading('registerBtn', 'registerSpinner', false);
+        }
+    }
+
+    async function handleVerifyOtp() {
+        const otp = document.getElementById('otpInput').value.trim();
+
+        if (!otp || otp.length !== 6) {
+            document.getElementById('otpError').textContent = 'Enter valid 6-digit OTP';
+            document.getElementById('otpError').style.display = 'block';
+            return;
+        }
+
+        setLoading('verifyBtn', 'verifySpinner', true);
+
+        try {
+            const response = await fetch(`${API_BASE}/auth/verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: registeredEmail,
+                    otp: otp,
+                    type: 'EMAIL_VERIFY'
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showToast('Email verified! Redirecting to login...', 'success');
+                setTimeout(() => window.location.href = '/login.html', 1500);
+            } else {
+                document.getElementById('otpError').textContent = data.message || 'Invalid OTP!';
+                document.getElementById('otpError').style.display = 'block';
+            }
+        } catch (err) {
+            showToast('Server error!', 'error');
+        } finally {
+            setLoading('verifyBtn', 'verifySpinner', false);
+        }
+    }
+
+    async function resendOtp() {
+        if (!registeredEmail) return;
+        try {
+            await fetch(`${API_BASE}/auth/send-otp?email=${registeredEmail}`, { method: 'POST' });
+            showToast('OTP resent! Check Eclipse console.', 'info');
+        } catch (err) {
+            showToast('Failed to resend OTP', 'error');
+        }
+    }
+
+    function goBack() {
+        document.getElementById('otpStep').style.display = 'none';
+        document.getElementById('registerStep').style.display = 'block';
+    }
+</script>
+</body>
+</html>

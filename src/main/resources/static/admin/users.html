@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--primary:#1a1a2e;--accent:#e94560;--bg:#f0f2f5;--white:#fff;--sidebar-w:260px;--text:#2d2d2d;--muted:#888;--border:#e5e7eb;--success:#27ae60;--error:#e74c3c;--info:#3498db;--warning:#f39c12}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);display:flex;min-height:100vh}
+        .sidebar{width:var(--sidebar-w);background:var(--primary);min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100}
+        .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:10px}
+        .logo-dot{width:10px;height:10px;background:var(--accent);border-radius:50%}
+        .sidebar-brand span{color:white;font-size:1.2rem;font-weight:700}
+        .sidebar-brand small{color:rgba(255,255,255,0.4);font-size:0.7rem;display:block}
+        .sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
+        .nav-section{padding:8px 20px 4px;color:rgba(255,255,255,0.3);font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.88rem;font-weight:500;transition:all 0.2s;margin:2px 8px;border-radius:10px}
+        .nav-item:hover{background:rgba(255,255,255,0.08);color:white}
+        .nav-item.active{background:var(--accent);color:white}
+        .nav-item .icon{font-size:1.1rem;width:20px;text-align:center}
+        .sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08)}
+        .sidebar-user{display:flex;align-items:center;gap:10px}
+        .user-avatar{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.9rem}
+        .user-info span{color:white;font-size:0.85rem;font-weight:600;display:block}
+        .user-info small{color:rgba(255,255,255,0.4);font-size:0.72rem}
+        .logout-btn{margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1rem}
+        .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column}
+        .topbar{background:var(--white);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+        .page-title h1{font-size:1.3rem;font-weight:700;color:var(--primary)}
+        .page-title p{font-size:0.8rem;color:var(--muted);margin-top:2px}
+        .btn{padding:9px 18px;border-radius:10px;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+        .btn-primary{background:var(--accent);color:white}
+        .btn-secondary{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+        .btn-sm{padding:6px 12px;font-size:0.78rem}
+        .btn-danger{background:#fdeaea;color:var(--error);border:none}
+        .btn-warning{background:#fef9e7;color:var(--warning);border:none}
+        .content{padding:28px;flex:1}
+        .card{background:var(--white);border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden}
+        .card-header{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+        .card-header h3{font-size:1rem;font-weight:700;color:var(--primary)}
+        table{width:100%;border-collapse:collapse}
+        th{padding:11px 18px;text-align:left;font-size:0.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;background:#fafafa;border-bottom:1px solid var(--border)}
+        td{padding:12px 18px;font-size:0.85rem;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+        tr:hover td{background:#fafafa}
+        tr:last-child td{border-bottom:none}
+        .badge{padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:600}
+        .badge-success{background:#e8f8f0;color:var(--success)}
+        .badge-danger{background:#fdeaea;color:var(--error)}
+        .badge-secondary{background:#f3f4f6;color:var(--muted)}
+        .user-cell{display:flex;align-items:center;gap:10px}
+        .user-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#0f3460);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.85rem;flex-shrink:0}
+        .user-name{font-weight:600;color:var(--primary)}
+        .user-email{font-size:0.75rem;color:var(--muted)}
+        .action-btns{display:flex;gap:6px}
+        .filter-row{display:flex;gap:10px;align-items:center}
+        .search-input{padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:0.85rem;width:220px;outline:none}
+        .search-input:focus{border-color:var(--accent)}
+        .select-input{padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:0.85rem;outline:none;background:white;cursor:pointer}
+        .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:24px}
+        .stat-mini{background:var(--white);border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center}
+        .stat-mini .num{font-size:1.8rem;font-weight:700;color:var(--primary)}
+        .stat-mini .lbl{font-size:0.78rem;color:var(--muted);margin-top:4px}
+        .empty-state{text-align:center;padding:60px;color:var(--muted)}
+        .empty-state .icon{font-size:3rem;margin-bottom:12px}
+        .toast{position:fixed;top:20px;right:20px;background:var(--success);color:white;padding:12px 22px;border-radius:12px;font-size:0.88rem;font-weight:600;z-index:999;display:none}
+        .toast.error{background:var(--error)}
+        .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal{background:white;border-radius:20px;padding:32px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto}
+        .modal h3{font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:16px}
+        .info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #f5f5f5;font-size:0.85rem}
+        .info-row:last-child{border-bottom:none}
+        .info-label{color:var(--muted);font-weight:500}
+        .info-value{color:var(--text);font-weight:600}
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-dot"></div><div><span>ShopEase</span><small>Admin Panel</small></div></div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a href="/admin/dashboard.html" class="nav-item"><span class="icon">📊</span> Dashboard</a>
+        <div class="nav-section">Catalog</div>
+        <a href="/admin/products.html" class="nav-item"><span class="icon">📦</span> Products</a>
+        <a href="/admin/categories.html" class="nav-item"><span class="icon">🏷️</span> Categories</a>
+        <a href="/admin/banners.html" class="nav-item"><span class="icon">🖼️</span> Banners</a>
+        <div class="nav-section">Sales</div>
+        <a href="/admin/orders.html" class="nav-item"><span class="icon">🛒</span> Orders</a>
+        <a href="/admin/coupons.html" class="nav-item"><span class="icon">🎟️</span> Coupons</a>
+        <div class="nav-section">Customers</div>
+        <a href="/admin/users.html" class="nav-item active"><span class="icon">👥</span> Users</a>
+        <a href="/admin/reviews.html" class="nav-item"><span class="icon">⭐</span> Reviews</a>
+        <div class="nav-section">Support</div>
+        <a href="/admin/support.html" class="nav-item"><span class="icon">🎫</span> Support</a>
+        <a href="/admin/returns.html" class="nav-item"><span class="icon">↩️</span> Returns</a>
+        <div class="nav-section">Content</div>
+        <a href="/admin/blogs.html" class="nav-item"><span class="icon">📝</span> Blogs</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="user-avatar" id="adminAvatar">A</div>
+            <div class="user-info"><span id="adminName">Admin</span><small>Administrator</small></div>
+            <button class="logout-btn" onclick="logout()">🚪</button>
+        </div>
+    </div>
+</aside>
+ 
+<div class="main">
+    <div class="topbar">
+        <div class="page-title"><h1>👥 Users</h1><p>Manage customer accounts</p></div>
+        <div class="filter-row">
+            <input type="text" class="search-input" placeholder="Search name or email..." id="searchInput" oninput="filterUsers()">
+            <select class="select-input" id="statusFilter" onchange="filterUsers()">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="blocked">Blocked</option>
+            </select>
+        </div>
+    </div>
+    <div class="content">
+        <div class="stat-row">
+            <div class="stat-mini"><div class="num" id="totalUsers">-</div><div class="lbl">Total Users</div></div>
+            <div class="stat-mini"><div class="num" id="activeUsers" style="color:var(--success)">-</div><div class="lbl">Active</div></div>
+            <div class="stat-mini"><div class="num" id="blockedUsers" style="color:var(--error)">-</div><div class="lbl">Blocked</div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><h3>All Users</h3><span id="userCount" style="font-size:0.82rem;color:var(--muted)"></span></div>
+            <table>
+                <thead><tr><th>User</th><th>Phone</th><th>Joined</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
+                <tbody id="userTableBody"><tr><td colspan="6" class="empty-state"><div class="icon">⏳</div>Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+ 
+<!-- User Detail Modal -->
+<div class="modal-overlay" id="userModal">
+    <div class="modal">
+        <h3>👤 User Details</h3>
+        <div id="userDetails"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:20px">
+            <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+</div>
+ 
+<div class="toast" id="toast"></div>
+ 
+<script>
+const API='/api';
+let allUsers=[];
+function getToken(){return localStorage.getItem('token')||sessionStorage.getItem('token')}
+function getUserName(){return localStorage.getItem('userName')||sessionStorage.getItem('userName')}
+function logout(){localStorage.clear();sessionStorage.clear();window.location.href='/login.html'}
+function showToast(msg,error=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(error?' error':'');t.style.display='block';setTimeout(()=>t.style.display='none',3000)}
+async function apiFetch(url,opts={}){const res=await fetch(API+url,{headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},...opts});if(res.status===401){logout();return null}try{return await res.json()}catch{return null}}
+ 
+function initAdmin(){
+    if(!getToken()){window.location.href='/login.html';return}
+    const name=getUserName()||'Admin';
+    document.getElementById('adminName').textContent=name;
+    document.getElementById('adminAvatar').textContent=name[0].toUpperCase();
+}
+ 
+async function loadUsers(){
+    const data=await apiFetch('/admin/users');
+    allUsers=Array.isArray(data)?data:(data?.data||[]);
+    const blocked=allUsers.filter(u=>u.blocked||u.status==='BLOCKED');
+    document.getElementById('totalUsers').textContent=allUsers.length;
+    document.getElementById('activeUsers').textContent=allUsers.length-blocked.length;
+    document.getElementById('blockedUsers').textContent=blocked.length;
+    renderTable(allUsers);
+}
+ 
+function renderTable(users){
+    const tbody=document.getElementById('userTableBody');
+    document.getElementById('userCount').textContent=users.length+' users';
+    if(!users.length){tbody.innerHTML=`<tr><td colspan="6"><div class="empty-state"><div class="icon">👥</div><p>No users found</p></div></td></tr>`;return}
+    tbody.innerHTML=users.map(u=>{
+        const name=u.name||u.fullName||u.firstName+' '+(u.lastName||'');
+        const isBlocked=u.blocked||u.status==='BLOCKED';
+        return `<tr>
+            <td><div class="user-cell"><div class="user-av">${(name||'?')[0].toUpperCase()}</div><div><div class="user-name">${name||'-'}</div><div class="user-email">${u.email||''}</div></div></div></td>
+            <td>${u.phone||u.phoneNumber||'-'}</td>
+            <td style="font-size:0.78rem">${u.createdAt?new Date(u.createdAt).toLocaleDateString('en-IN'):'-'}</td>
+            <td><span class="badge badge-secondary">${u.role||'USER'}</span></td>
+            <td><span class="badge ${isBlocked?'badge-danger':'badge-success'}">${isBlocked?'Blocked':'Active'}</span></td>
+            <td><div class="action-btns">
+                <button class="btn btn-sm btn-secondary" onclick="viewUser(${JSON.stringify(u).replace(/"/g,'&quot;')})">👁️</button>
+                ${isBlocked
+                    ?`<button class="btn btn-sm btn-secondary" onclick="toggleBlock(${u.id},false)">✅ Unblock</button>`
+                    :`<button class="btn btn-sm btn-warning" onclick="toggleBlock(${u.id},true)">🚫 Block</button>`
+                }
+                <button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id},'${name}')">🗑️</button>
+            </div></td>
+        </tr>`}).join('');
+}
+ 
+function filterUsers(){
+    const q=document.getElementById('searchInput').value.toLowerCase();
+    const status=document.getElementById('statusFilter').value;
+    let filtered=allUsers;
+    if(q) filtered=filtered.filter(u=>(u.name||u.fullName||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q));
+    if(status==='active') filtered=filtered.filter(u=>!u.blocked&&u.status!=='BLOCKED');
+    if(status==='blocked') filtered=filtered.filter(u=>u.blocked||u.status==='BLOCKED');
+    renderTable(filtered);
+}
+ 
+function viewUser(u){
+    const name=u.name||u.fullName||u.firstName+' '+(u.lastName||'');
+    document.getElementById('userDetails').innerHTML=`
+        <div class="info-row"><span class="info-label">Name</span><span class="info-value">${name||'-'}</span></div>
+        <div class="info-row"><span class="info-label">Email</span><span class="info-value">${u.email||'-'}</span></div>
+        <div class="info-row"><span class="info-label">Phone</span><span class="info-value">${u.phone||u.phoneNumber||'-'}</span></div>
+        <div class="info-row"><span class="info-label">Role</span><span class="info-value">${u.role||'USER'}</span></div>
+        <div class="info-row"><span class="info-label">Status</span><span class="info-value">${u.blocked||u.status==='BLOCKED'?'🚫 Blocked':'✅ Active'}</span></div>
+        <div class="info-row"><span class="info-label">Joined</span><span class="info-value">${u.createdAt?new Date(u.createdAt).toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'}):'-'}</span></div>
+        <div class="info-row"><span class="info-label">User ID</span><span class="info-value">#${u.id}</span></div>
+    `;
+    document.getElementById('userModal').classList.add('open');
+}
+function closeModal(){document.getElementById('userModal').classList.remove('open')}
+ 
+async function toggleBlock(id,block){
+    const url=block?`/admin/users/block/${id}`:`/admin/users/unblock/${id}`;
+    await apiFetch(url,{method:'PUT'});
+    showToast(block?'User blocked':'User unblocked');
+    loadUsers();
+}
+ 
+async function deleteUser(id,name){
+    if(!confirm(`Delete user "${name}"? This cannot be undone.`))return;
+    await apiFetch(`/admin/users/delete/${id}`,{method:'DELETE'});
+    showToast('User deleted');loadUsers();
+}
+ 
+document.getElementById('userModal').addEventListener('click',e=>{if(e.target===document.getElementById('userModal'))closeModal()});
+document.addEventListener('DOMContentLoaded',()=>{initAdmin();loadUsers()});
+</script>
+</body>
+</html>

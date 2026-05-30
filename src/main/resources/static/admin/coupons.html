@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupons | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--primary:#1a1a2e;--accent:#e94560;--bg:#f0f2f5;--white:#fff;--sidebar-w:260px;--text:#2d2d2d;--muted:#888;--border:#e5e7eb;--success:#27ae60;--error:#e74c3c;--info:#3498db;--warning:#f39c12}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);display:flex;min-height:100vh}
+        .sidebar{width:var(--sidebar-w);background:var(--primary);min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100}
+        .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:10px}
+        .logo-dot{width:10px;height:10px;background:var(--accent);border-radius:50%}
+        .sidebar-brand span{color:white;font-size:1.2rem;font-weight:700}
+        .sidebar-brand small{color:rgba(255,255,255,0.4);font-size:0.7rem;display:block}
+        .sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
+        .nav-section{padding:8px 20px 4px;color:rgba(255,255,255,0.3);font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.88rem;font-weight:500;transition:all 0.2s;margin:2px 8px;border-radius:10px}
+        .nav-item:hover{background:rgba(255,255,255,0.08);color:white}
+        .nav-item.active{background:var(--accent);color:white}
+        .nav-item .icon{font-size:1.1rem;width:20px;text-align:center}
+        .sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08)}
+        .sidebar-user{display:flex;align-items:center;gap:10px}
+        .user-avatar{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.9rem}
+        .user-info span{color:white;font-size:0.85rem;font-weight:600;display:block}
+        .user-info small{color:rgba(255,255,255,0.4);font-size:0.72rem}
+        .logout-btn{margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1rem}
+        .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column}
+        .topbar{background:var(--white);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+        .page-title h1{font-size:1.3rem;font-weight:700;color:var(--primary)}
+        .page-title p{font-size:0.8rem;color:var(--muted);margin-top:2px}
+        .btn{padding:9px 18px;border-radius:10px;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+        .btn-primary{background:var(--accent);color:white}
+        .btn-primary:hover{background:#c73652}
+        .btn-secondary{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+        .btn-sm{padding:6px 12px;font-size:0.78rem}
+        .btn-danger{background:#fdeaea;color:var(--error);border:none}
+        .content{padding:28px;flex:1}
+        .card{background:var(--white);border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden}
+        .card-header{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+        .card-header h3{font-size:1rem;font-weight:700;color:var(--primary)}
+        table{width:100%;border-collapse:collapse}
+        th{padding:11px 18px;text-align:left;font-size:0.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;background:#fafafa;border-bottom:1px solid var(--border)}
+        td{padding:12px 18px;font-size:0.85rem;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+        tr:hover td{background:#fafafa}
+        tr:last-child td{border-bottom:none}
+        .badge{padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:600}
+        .badge-success{background:#e8f8f0;color:var(--success)}
+        .badge-danger{background:#fdeaea;color:var(--error)}
+        .badge-info{background:#e8f4fd;color:var(--info)}
+        .badge-warning{background:#fef9e7;color:var(--warning)}
+        .badge-secondary{background:#f3f4f6;color:var(--muted)}
+        .coupon-code{font-family:monospace;background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#e94560;padding:4px 12px;border-radius:8px;font-size:0.9rem;font-weight:700;letter-spacing:2px;border:1px dashed #e94560}
+        .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal{background:white;border-radius:20px;padding:32px;width:500px;max-width:95vw;max-height:90vh;overflow-y:auto}
+        .modal h3{font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:20px}
+        .form-group{margin-bottom:16px}
+        .form-group label{display:block;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:6px}
+        .form-control{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:0.88rem;color:var(--text);outline:none;transition:border-color 0.2s}
+        .form-control:focus{border-color:var(--accent)}
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+        .empty-state{text-align:center;padding:60px;color:var(--muted)}
+        .empty-state .icon{font-size:3rem;margin-bottom:12px}
+        .action-btns{display:flex;gap:6px}
+        .toast{position:fixed;top:20px;right:20px;background:var(--success);color:white;padding:12px 22px;border-radius:12px;font-size:0.88rem;font-weight:600;z-index:999;display:none}
+        .toast.error{background:var(--error)}
+        .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:24px}
+        .stat-mini{background:var(--white);border-radius:14px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);text-align:center}
+        .stat-mini .num{font-size:1.8rem;font-weight:700;color:var(--primary)}
+        .stat-mini .lbl{font-size:0.78rem;color:var(--muted);margin-top:4px}
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-dot"></div><div><span>ShopEase</span><small>Admin Panel</small></div></div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a href="/admin/dashboard.html" class="nav-item"><span class="icon">📊</span> Dashboard</a>
+        <div class="nav-section">Catalog</div>
+        <a href="/admin/products.html" class="nav-item"><span class="icon">📦</span> Products</a>
+        <a href="/admin/categories.html" class="nav-item"><span class="icon">🏷️</span> Categories</a>
+        <a href="/admin/banners.html" class="nav-item"><span class="icon">🖼️</span> Banners</a>
+        <div class="nav-section">Sales</div>
+        <a href="/admin/orders.html" class="nav-item"><span class="icon">🛒</span> Orders</a>
+        <a href="/admin/coupons.html" class="nav-item active"><span class="icon">🎟️</span> Coupons</a>
+        <div class="nav-section">Customers</div>
+        <a href="/admin/users.html" class="nav-item"><span class="icon">👥</span> Users</a>
+        <a href="/admin/reviews.html" class="nav-item"><span class="icon">⭐</span> Reviews</a>
+        <div class="nav-section">Support</div>
+        <a href="/admin/support.html" class="nav-item"><span class="icon">🎫</span> Support</a>
+        <a href="/admin/returns.html" class="nav-item"><span class="icon">↩️</span> Returns</a>
+        <div class="nav-section">Content</div>
+        <a href="/admin/blogs.html" class="nav-item"><span class="icon">📝</span> Blogs</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="user-avatar" id="adminAvatar">A</div>
+            <div class="user-info"><span id="adminName">Admin</span><small>Administrator</small></div>
+            <button class="logout-btn" onclick="logout()">🚪</button>
+        </div>
+    </div>
+</aside>
+ 
+<div class="main">
+    <div class="topbar">
+        <div class="page-title">
+            <h1>🎟️ Coupons</h1>
+            <p>Create and manage discount coupons</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal()">+ Create Coupon</button>
+    </div>
+    <div class="content">
+        <div class="stat-row">
+            <div class="stat-mini"><div class="num" id="totalCoupons">-</div><div class="lbl">Total Coupons</div></div>
+            <div class="stat-mini"><div class="num" id="activeCoupons" style="color:var(--success)">-</div><div class="lbl">Active</div></div>
+            <div class="stat-mini"><div class="num" id="expiredCoupons" style="color:var(--error)">-</div><div class="lbl">Expired</div></div>
+        </div>
+        <div class="card">
+            <div class="card-header"><h3>All Coupons</h3></div>
+            <table>
+                <thead>
+                    <tr><th>Code</th><th>Type</th><th>Value</th><th>Min Order</th><th>Max Uses</th><th>Expiry</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody id="couponTableBody"><tr><td colspan="8" class="empty-state"><div class="icon">⏳</div>Loading...</td></tr></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+ 
+<!-- Modal -->
+<div class="modal-overlay" id="couponModal">
+    <div class="modal">
+        <h3 id="modalTitle">Create Coupon</h3>
+        <input type="hidden" id="editId">
+        <div class="form-group">
+            <label>Coupon Code *</label>
+            <input type="text" class="form-control" id="couponCode" placeholder="e.g. SAVE20" style="text-transform:uppercase">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Discount Type *</label>
+                <select class="form-control" id="discountType">
+                    <option value="PERCENTAGE">Percentage (%)</option>
+                    <option value="FIXED">Fixed Amount (₹)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Discount Value *</label>
+                <input type="number" class="form-control" id="discountValue" placeholder="e.g. 20" min="0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Min Order Amount</label>
+                <input type="number" class="form-control" id="minOrder" placeholder="e.g. 500" min="0">
+            </div>
+            <div class="form-group">
+                <label>Max Discount (for %)</label>
+                <input type="number" class="form-control" id="maxDiscount" placeholder="e.g. 200" min="0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Max Uses (total)</label>
+                <input type="number" class="form-control" id="maxUses" placeholder="Leave blank for unlimited">
+            </div>
+            <div class="form-group">
+                <label>Max Uses Per User</label>
+                <input type="number" class="form-control" id="maxUsesPerUser" placeholder="e.g. 1">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Expiry Date</label>
+            <input type="datetime-local" class="form-control" id="expiryDate">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <input type="text" class="form-control" id="couponDesc" placeholder="Brief description">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveCoupon()">Save Coupon</button>
+        </div>
+    </div>
+</div>
+ 
+<div class="toast" id="toast"></div>
+ 
+<script>
+const API='/api';
+function getToken(){return localStorage.getItem('token')||sessionStorage.getItem('token')}
+function getUserName(){return localStorage.getItem('userName')||sessionStorage.getItem('userName')}
+function logout(){localStorage.clear();sessionStorage.clear();window.location.href='/login.html'}
+function showToast(msg,error=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(error?' error':'');t.style.display='block';setTimeout(()=>t.style.display='none',3000)}
+async function apiFetch(url,opts={}){const res=await fetch(API+url,{headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},...opts});if(res.status===401){logout();return null}try{return await res.json()}catch{return null}}
+ 
+function initAdmin(){
+    if(!getToken()){window.location.href='/login.html';return}
+    const name=getUserName()||'Admin';
+    document.getElementById('adminName').textContent=name;
+    document.getElementById('adminAvatar').textContent=name[0].toUpperCase();
+}
+ 
+async function loadCoupons(){
+    const data=await apiFetch('/admin/coupons');
+    const coupons=Array.isArray(data)?data:(data?.data||[]);
+    const now=new Date();
+    const active=coupons.filter(c=>c.active!==false&&(!c.expiryDate||new Date(c.expiryDate)>now));
+    const expired=coupons.filter(c=>c.expiryDate&&new Date(c.expiryDate)<=now);
+    document.getElementById('totalCoupons').textContent=coupons.length;
+    document.getElementById('activeCoupons').textContent=active.length;
+    document.getElementById('expiredCoupons').textContent=expired.length;
+    const tbody=document.getElementById('couponTableBody');
+    if(!coupons.length){tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="icon">🎟️</div><p>No coupons yet</p></div></td></tr>`;return}
+    const isExpired=c=>c.expiryDate&&new Date(c.expiryDate)<=now;
+    tbody.innerHTML=coupons.map(c=>`
+        <tr>
+            <td><span class="coupon-code">${c.code||c.couponCode||''}</span></td>
+            <td><span class="badge badge-info">${c.discountType||'PERCENTAGE'}</span></td>
+            <td><strong>${c.discountType==='PERCENTAGE'?(c.discountValue||c.discount||0)+'%':'₹'+(c.discountValue||c.discount||0)}</strong></td>
+            <td>${c.minOrderAmount||c.minOrder?'₹'+(c.minOrderAmount||c.minOrder):'-'}</td>
+            <td>${c.maxUses||'∞'}</td>
+            <td style="font-size:0.78rem">${c.expiryDate?new Date(c.expiryDate).toLocaleDateString('en-IN'):'-'}</td>
+            <td><span class="badge ${isExpired(c)?'badge-danger':c.active===false?'badge-secondary':'badge-success'}">${isExpired(c)?'Expired':c.active===false?'Inactive':'Active'}</span></td>
+            <td>
+                <div class="action-btns">
+                    <button class="btn btn-sm btn-secondary" onclick="editCoupon(${JSON.stringify(c).replace(/"/g,'&quot;')})">✏️</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteCoupon(${c.id})">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+ 
+function openModal(){document.getElementById('couponModal').classList.add('open');document.getElementById('modalTitle').textContent='Create Coupon';document.getElementById('editId').value='';['couponCode','discountValue','minOrder','maxDiscount','maxUses','maxUsesPerUser','expiryDate','couponDesc'].forEach(id=>document.getElementById(id).value='');document.getElementById('discountType').value='PERCENTAGE'}
+function closeModal(){document.getElementById('couponModal').classList.remove('open')}
+function editCoupon(c){
+    document.getElementById('couponModal').classList.add('open');
+    document.getElementById('modalTitle').textContent='Edit Coupon';
+    document.getElementById('editId').value=c.id;
+    document.getElementById('couponCode').value=c.code||c.couponCode||'';
+    document.getElementById('discountType').value=c.discountType||'PERCENTAGE';
+    document.getElementById('discountValue').value=c.discountValue||c.discount||'';
+    document.getElementById('minOrder').value=c.minOrderAmount||c.minOrder||'';
+    document.getElementById('maxDiscount').value=c.maxDiscountAmount||c.maxDiscount||'';
+    document.getElementById('maxUses').value=c.maxUses||'';
+    document.getElementById('maxUsesPerUser').value=c.maxUsesPerUser||'';
+    document.getElementById('expiryDate').value=c.expiryDate?c.expiryDate.slice(0,16):'';
+    document.getElementById('couponDesc').value=c.description||'';
+}
+ 
+async function saveCoupon(){
+    const id=document.getElementById('editId').value;
+    const body={
+        code:document.getElementById('couponCode').value.toUpperCase(),
+        discountType:document.getElementById('discountType').value,
+        discountValue:parseFloat(document.getElementById('discountValue').value)||0,
+        minOrderAmount:parseFloat(document.getElementById('minOrder').value)||null,
+        maxDiscountAmount:parseFloat(document.getElementById('maxDiscount').value)||null,
+        maxUses:parseInt(document.getElementById('maxUses').value)||null,
+        maxUsesPerUser:parseInt(document.getElementById('maxUsesPerUser').value)||null,
+        expiryDate:document.getElementById('expiryDate').value||null,
+        description:document.getElementById('couponDesc').value
+    };
+    if(!body.code||!body.discountValue){showToast('Code and discount value required',true);return}
+    const url=id?`/admin/coupons/update/${id}`:'/admin/coupons/add';
+    const method=id?'PUT':'POST';
+    const res=await apiFetch(url,{method,body:JSON.stringify(body)});
+    if(res){showToast(id?'Coupon updated!':'Coupon created!');closeModal();loadCoupons()}else showToast('Failed to save coupon',true);
+}
+ 
+async function deleteCoupon(id){if(!confirm('Delete this coupon?'))return;await apiFetch(`/admin/coupons/delete/${id}`,{method:'DELETE'});showToast('Coupon deleted');loadCoupons()}
+ 
+document.getElementById('couponModal').addEventListener('click',e=>{if(e.target===document.getElementById('couponModal'))closeModal()});
+document.addEventListener('DOMContentLoaded',()=>{initAdmin();loadCoupons()});
+</script>
+</body>
+</html>
+ 

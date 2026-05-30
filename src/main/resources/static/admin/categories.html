@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{--primary:#1a1a2e;--accent:#e94560;--bg:#f0f2f5;--white:#fff;--sidebar-w:260px;--text:#2d2d2d;--muted:#888;--border:#e5e7eb;--success:#27ae60;--error:#e74c3c;--info:#3498db;--warning:#f39c12}
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',sans-serif;background:var(--bg);display:flex;min-height:100vh}
+        .sidebar{width:var(--sidebar-w);background:var(--primary);min-height:100vh;position:fixed;top:0;left:0;display:flex;flex-direction:column;z-index:100}
+        .sidebar-brand{padding:24px 20px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:10px}
+        .logo-dot{width:10px;height:10px;background:var(--accent);border-radius:50%}
+        .sidebar-brand span{color:white;font-size:1.2rem;font-weight:700}
+        .sidebar-brand small{color:rgba(255,255,255,0.4);font-size:0.7rem;display:block}
+        .sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
+        .nav-section{padding:8px 20px 4px;color:rgba(255,255,255,0.3);font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+        .nav-item{display:flex;align-items:center;gap:12px;padding:11px 20px;color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.88rem;font-weight:500;transition:all 0.2s;margin:2px 8px;border-radius:10px}
+        .nav-item:hover{background:rgba(255,255,255,0.08);color:white}
+        .nav-item.active{background:var(--accent);color:white}
+        .nav-item .icon{font-size:1.1rem;width:20px;text-align:center}
+        .sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08)}
+        .sidebar-user{display:flex;align-items:center;gap:10px}
+        .user-avatar{width:36px;height:36px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:0.9rem}
+        .user-info span{color:white;font-size:0.85rem;font-weight:600;display:block}
+        .user-info small{color:rgba(255,255,255,0.4);font-size:0.72rem}
+        .logout-btn{margin-left:auto;background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1rem;transition:color 0.2s}
+        .logout-btn:hover{color:var(--accent)}
+        .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column}
+        .topbar{background:var(--white);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+        .page-title h1{font-size:1.3rem;font-weight:700;color:var(--primary)}
+        .page-title p{font-size:0.8rem;color:var(--muted);margin-top:2px}
+        .topbar-right{display:flex;align-items:center;gap:14px}
+        .btn{padding:9px 18px;border-radius:10px;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:600;cursor:pointer;border:none;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px}
+        .btn-primary{background:var(--accent);color:white}
+        .btn-primary:hover{background:#c73652}
+        .btn-secondary{background:var(--bg);color:var(--text);border:1px solid var(--border)}
+        .btn-secondary:hover{background:#e5e7eb}
+        .btn-sm{padding:6px 12px;font-size:0.78rem}
+        .btn-danger{background:#fdeaea;color:var(--error);border:none}
+        .btn-danger:hover{background:#fca5a5}
+        .content{padding:28px;flex:1}
+        .card{background:var(--white);border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);overflow:hidden}
+        .card-header{padding:18px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+        .card-header h3{font-size:1rem;font-weight:700;color:var(--primary)}
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+        table{width:100%;border-collapse:collapse}
+        th{padding:11px 18px;text-align:left;font-size:0.72rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;background:#fafafa;border-bottom:1px solid var(--border)}
+        td{padding:12px 18px;font-size:0.85rem;border-bottom:1px solid #f5f5f5;vertical-align:middle}
+        tr:hover td{background:#fafafa}
+        tr:last-child td{border-bottom:none}
+        .badge{padding:4px 10px;border-radius:20px;font-size:0.72rem;font-weight:600;display:inline-block}
+        .badge-success{background:#e8f8f0;color:var(--success)}
+        .badge-info{background:#e8f4fd;color:var(--info)}
+        .modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal{background:white;border-radius:20px;padding:32px;width:460px;max-width:95vw;max-height:90vh;overflow-y:auto}
+        .modal h3{font-size:1.1rem;font-weight:700;color:var(--primary);margin-bottom:20px}
+        .form-group{margin-bottom:16px}
+        .form-group label{display:block;font-size:0.82rem;font-weight:600;color:var(--text);margin-bottom:6px}
+        .form-control{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:0.88rem;color:var(--text);outline:none;transition:border-color 0.2s}
+        .form-control:focus{border-color:var(--accent)}
+        .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+        .empty-state{text-align:center;padding:48px;color:var(--muted)}
+        .empty-state .icon{font-size:3rem;margin-bottom:12px}
+        .action-btns{display:flex;gap:6px}
+        .cat-icon{font-size:1.4rem;margin-right:4px}
+        .sub-toggle{cursor:pointer;color:var(--info);font-size:0.78rem;font-weight:600;text-decoration:underline;background:none;border:none;font-family:'Inter',sans-serif}
+        .sub-row{background:#fafafa}
+        .search-bar{display:flex;align-items:center;gap:10px}
+        .search-input{padding:8px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:0.85rem;width:220px;outline:none}
+        .search-input:focus{border-color:var(--accent)}
+        .toast{position:fixed;top:20px;right:20px;background:var(--success);color:white;padding:12px 22px;border-radius:12px;font-size:0.88rem;font-weight:600;z-index:999;display:none;animation:slideIn 0.3s ease}
+        .toast.error{background:var(--error)}
+        @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-brand"><div class="logo-dot"></div><div><span>ShopEase</span><small>Admin Panel</small></div></div>
+    <nav class="sidebar-nav">
+        <div class="nav-section">Main</div>
+        <a href="/admin/dashboard.html" class="nav-item"><span class="icon">📊</span> Dashboard</a>
+        <div class="nav-section">Catalog</div>
+        <a href="/admin/products.html" class="nav-item"><span class="icon">📦</span> Products</a>
+        <a href="/admin/categories.html" class="nav-item active"><span class="icon">🏷️</span> Categories</a>
+        <a href="/admin/banners.html" class="nav-item"><span class="icon">🖼️</span> Banners</a>
+        <div class="nav-section">Sales</div>
+        <a href="/admin/orders.html" class="nav-item"><span class="icon">🛒</span> Orders</a>
+        <a href="/admin/coupons.html" class="nav-item"><span class="icon">🎟️</span> Coupons</a>
+        <div class="nav-section">Customers</div>
+        <a href="/admin/users.html" class="nav-item"><span class="icon">👥</span> Users</a>
+        <a href="/admin/reviews.html" class="nav-item"><span class="icon">⭐</span> Reviews</a>
+        <div class="nav-section">Support</div>
+        <a href="/admin/support.html" class="nav-item"><span class="icon">🎫</span> Support</a>
+        <a href="/admin/returns.html" class="nav-item"><span class="icon">↩️</span> Returns</a>
+        <div class="nav-section">Content</div>
+        <a href="/admin/blogs.html" class="nav-item"><span class="icon">📝</span> Blogs</a>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="sidebar-user">
+            <div class="user-avatar" id="adminAvatar">A</div>
+            <div class="user-info"><span id="adminName">Admin</span><small>Administrator</small></div>
+            <button class="logout-btn" onclick="logout()">🚪</button>
+        </div>
+    </div>
+</aside>
+ 
+<div class="main">
+    <div class="topbar">
+        <div class="page-title">
+            <h1>🏷️ Categories</h1>
+            <p>Manage product categories and subcategories</p>
+        </div>
+        <div class="topbar-right">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search categories..." id="searchInput" oninput="filterCategories()">
+            </div>
+            <button class="btn btn-primary" onclick="openModal()">+ Add Category</button>
+        </div>
+    </div>
+ 
+    <div class="content">
+        <div class="card">
+            <div class="card-header">
+                <h3>All Categories</h3>
+                <span id="catCount" style="font-size:0.82rem;color:var(--muted)"></span>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Category Name</th>
+                        <th>Slug</th>
+                        <th>Subcategories</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="catTableBody">
+                    <tr><td colspan="5" class="empty-state"><div class="icon">⏳</div><p>Loading...</p></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+ 
+<!-- Add/Edit Category Modal -->
+<div class="modal-overlay" id="catModal">
+    <div class="modal">
+        <h3 id="modalTitle">Add Category</h3>
+        <input type="hidden" id="editId">
+        <div class="form-group">
+            <label>Category Name *</label>
+            <input type="text" class="form-control" id="catName" placeholder="e.g. Electronics">
+        </div>
+        <div class="form-group">
+            <label>Slug (URL friendly)</label>
+            <input type="text" class="form-control" id="catSlug" placeholder="e.g. electronics">
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" id="catDesc" rows="3" placeholder="Category description..."></textarea>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveCategory()">Save Category</button>
+        </div>
+    </div>
+</div>
+ 
+<!-- Add Subcategory Modal -->
+<div class="modal-overlay" id="subModal">
+    <div class="modal">
+        <h3>Add Subcategory</h3>
+        <input type="hidden" id="subParentId">
+        <input type="hidden" id="subEditId">
+        <div class="form-group">
+            <label>Parent Category</label>
+            <input type="text" class="form-control" id="subParentName" disabled>
+        </div>
+        <div class="form-group">
+            <label>Subcategory Name *</label>
+            <input type="text" class="form-control" id="subName" placeholder="e.g. Smartphones">
+        </div>
+        <div class="form-group">
+            <label>Slug</label>
+            <input type="text" class="form-control" id="subSlug" placeholder="e.g. smartphones">
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="closeSubModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="saveSubCategory()">Save Subcategory</button>
+        </div>
+    </div>
+</div>
+ 
+<div class="toast" id="toast"></div>
+ 
+<script>
+const API = '/api';
+let allCategories = [];
+ 
+function getToken(){return localStorage.getItem('token')||sessionStorage.getItem('token')}
+function getUserName(){return localStorage.getItem('userName')||sessionStorage.getItem('userName')}
+function logout(){localStorage.clear();sessionStorage.clear();window.location.href='/login.html'}
+ 
+async function apiFetch(url, opts={}) {
+    const res = await fetch(API+url, {
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+getToken()},
+        ...opts
+    });
+    if(res.status===401){logout();return null}
+    try{return await res.json()}catch{return null}
+}
+ 
+function showToast(msg, error=false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'toast'+(error?' error':'');
+    t.style.display='block'; setTimeout(()=>t.style.display='none',3000);
+}
+ 
+function initAdmin() {
+    if(!getToken()){window.location.href='/login.html';return}
+    const name = getUserName()||'Admin';
+    document.getElementById('adminName').textContent=name;
+    document.getElementById('adminAvatar').textContent=name[0].toUpperCase();
+}
+ 
+async function loadCategories() {
+    const data = await apiFetch('/admin/categories');
+    if(!data) return;
+    allCategories = Array.isArray(data) ? data : (data.data||[]);
+    renderTable(allCategories);
+}
+ 
+function renderTable(cats) {
+    const tbody = document.getElementById('catTableBody');
+    document.getElementById('catCount').textContent = cats.length + ' categories';
+    if(!cats.length){
+        tbody.innerHTML=`<tr><td colspan="5"><div class="empty-state"><div class="icon">🏷️</div><p>No categories found</p></div></td></tr>`;
+        return;
+    }
+    tbody.innerHTML = cats.map((c,i)=>`
+        <tr>
+            <td style="color:var(--muted);font-weight:600">${i+1}</td>
+            <td><strong>${c.name||c.categoryName||''}</strong></td>
+            <td><code style="background:#f3f4f6;padding:2px 8px;border-radius:6px;font-size:0.78rem">${c.slug||'-'}</code></td>
+            <td>
+                <span class="badge badge-info">${(c.subCategories||c.subcategories||[]).length} subs</span>
+                <button class="sub-toggle" onclick="openSubModal(${c.id},'${escHtml(c.name||c.categoryName||'')}')">+ Add Sub</button>
+            </td>
+            <td>
+                <div class="action-btns">
+                    <button class="btn btn-sm btn-secondary" onclick="editCategory(${c.id},'${escHtml(c.name||c.categoryName||'')}','${escHtml(c.slug||'')}','${escHtml(c.description||'')}')">✏️ Edit</button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteCategory(${c.id})">🗑️</button>
+                </div>
+            </td>
+        </tr>
+        ${(c.subCategories||c.subcategories||[]).map(s=>`
+        <tr class="sub-row">
+            <td></td>
+            <td style="padding-left:36px">↳ ${s.name||s.subCategoryName||''}</td>
+            <td><code style="background:#f3f4f6;padding:2px 8px;border-radius:6px;font-size:0.78rem">${s.slug||'-'}</code></td>
+            <td></td>
+            <td>
+                <div class="action-btns">
+                    <button class="btn btn-sm btn-danger" onclick="deleteSubCategory(${s.id},${c.id})">🗑️</button>
+                </div>
+            </td>
+        </tr>`).join('')}
+    `).join('');
+}
+ 
+function escHtml(s){return String(s).replace(/'/g,"\\'")}
+ 
+function filterCategories() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    renderTable(allCategories.filter(c=>(c.name||c.categoryName||'').toLowerCase().includes(q)));
+}
+ 
+function openModal(){ document.getElementById('catModal').classList.add('open'); document.getElementById('modalTitle').textContent='Add Category'; document.getElementById('editId').value=''; document.getElementById('catName').value=''; document.getElementById('catSlug').value=''; document.getElementById('catDesc').value=''; }
+function closeModal(){ document.getElementById('catModal').classList.remove('open'); }
+function editCategory(id,name,slug,desc){ document.getElementById('catModal').classList.add('open'); document.getElementById('modalTitle').textContent='Edit Category'; document.getElementById('editId').value=id; document.getElementById('catName').value=name; document.getElementById('catSlug').value=slug; document.getElementById('catDesc').value=desc; }
+ 
+async function saveCategory() {
+    const id = document.getElementById('editId').value;
+    const body = { name: document.getElementById('catName').value, slug: document.getElementById('catSlug').value, description: document.getElementById('catDesc').value };
+    if(!body.name){ showToast('Category name is required',true); return; }
+    const url = id ? `/admin/categories/update/${id}` : '/admin/categories/add';
+    const method = id ? 'PUT' : 'POST';
+    const res = await apiFetch(url, {method, body: JSON.stringify(body)});
+    if(res){ showToast(id?'Category updated!':'Category added!'); closeModal(); loadCategories(); }
+    else showToast('Failed to save category',true);
+}
+ 
+async function deleteCategory(id) {
+    if(!confirm('Delete this category?')) return;
+    await apiFetch(`/admin/categories/delete/${id}`, {method:'DELETE'});
+    showToast('Category deleted'); loadCategories();
+}
+ 
+function openSubModal(parentId, parentName){ document.getElementById('subModal').classList.add('open'); document.getElementById('subParentId').value=parentId; document.getElementById('subParentName').value=parentName; document.getElementById('subName').value=''; document.getElementById('subSlug').value=''; }
+function closeSubModal(){ document.getElementById('subModal').classList.remove('open'); }
+ 
+async function saveSubCategory() {
+    const parentId = document.getElementById('subParentId').value;
+    const body = { name: document.getElementById('subName').value, slug: document.getElementById('subSlug').value, categoryId: parentId };
+    if(!body.name){ showToast('Subcategory name required',true); return; }
+    const res = await apiFetch('/admin/categories/sub/add', {method:'POST', body: JSON.stringify(body)});
+    if(res){ showToast('Subcategory added!'); closeSubModal(); loadCategories(); }
+    else showToast('Failed to add subcategory',true);
+}
+ 
+async function deleteSubCategory(id, parentId) {
+    if(!confirm('Delete this subcategory?')) return;
+    await apiFetch(`/admin/categories/sub/delete/${id}`, {method:'DELETE'});
+    showToast('Subcategory deleted'); loadCategories();
+}
+ 
+document.getElementById('catModal').addEventListener('click', e=>{ if(e.target===document.getElementById('catModal')) closeModal(); });
+document.getElementById('subModal').addEventListener('click', e=>{ if(e.target===document.getElementById('subModal')) closeSubModal(); });
+ 
+document.addEventListener('DOMContentLoaded', ()=>{ initAdmin(); loadCategories(); });
+</script>
+</body>
+</html>
